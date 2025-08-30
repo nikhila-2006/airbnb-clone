@@ -8,6 +8,10 @@ const path = require("path");
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 
+// require and use method-override
+const methodOverride=require('method-override');
+app.use(methodOverride('_method'));
+
 // parse the url
 app.use(express.urlencoded({ extended: true }));
 
@@ -43,6 +47,20 @@ app.get("/listings/:id",async (req,res)=>{
     let {id}=req.params;
     let listing= await Listings.findById(id);
     res.render("./listings/show.ejs",{listing});
+})
+
+// Edit route
+app.get("/listings/:id/edit",async (req,res)=>{
+    let {id}=req.params;
+    let listing= await Listings.findById(id);
+    res.render("listings/edit.ejs",{listing})
+})
+
+// Update Route
+app.put("/listings/:id",async (req,res)=>{
+    let {id}=req.params;
+    await Listings.findByIdAndUpdate(id,{...req.body.listing});
+    res.redirect(`/listings/${id}`);
 })
 
 // root route
