@@ -8,6 +8,9 @@ const path = require("path");
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 
+// parse the url
+app.use(express.urlencoded({ extended: true }));
+
 // require mongoose and connecting with mongoose
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
@@ -21,6 +24,18 @@ const Listings=require("./models/listing.js");
 app.get("/listings",async (req,res)=>{
     let allListings=await Listings.find({});
     res.render("./listings/index.ejs",{allListings});
+})
+
+// New route
+app.get("/listings/new",(req,res)=>{
+    res.render("./listings/new.ejs")
+})
+
+// Create route
+app.post("/listings",async (req,res)=>{
+    let listing=new Listings(req.body.listing);
+    await listing.save();
+    res.redirect("/listings");
 })
 
 // show route
