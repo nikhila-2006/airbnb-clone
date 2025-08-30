@@ -15,12 +15,19 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
 .catch((err)=>{
     console.log(err);
 });
-const Listing=require("./models/listing.js");
+const Listings=require("./models/listing.js");
 
 // index route
 app.get("/listings",async (req,res)=>{
-    let allListings=await Listing.find({});
+    let allListings=await Listings.find({});
     res.render("./listings/index.ejs",{allListings});
+})
+
+// show route
+app.get("/listings/:id",async (req,res)=>{
+    let {id}=req.params;
+    let listing= await Listings.findById(id);
+    res.render("./listings/show.ejs",{listing});
 })
 
 // root route
