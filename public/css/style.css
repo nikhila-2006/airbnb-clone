@@ -1,3 +1,6 @@
+body{
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+}
 /* navbar-styling */
 .navbar{
     height: 5rem;
@@ -39,4 +42,32 @@
     font-size: 1.2rem;
     margin-right:1rem ;
     color: #222222;
+}
+
+/* cards */
+
+.card{
+    border: none !important;
+    margin-bottom: 2rem !important;
+    /* margin: 0.9rem !important; */
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    height: 16rem; 
+}
+.card-body{
+    padding: 0 !important;
+}
+.card-linking{
+    text-decoration: none;
+}
+/* card effect */
+.card-img-overlay{
+    opacity: 0;
+}
+.card-img-overlay:hover{
+    opacity: 0.1;
+    background-color: white;
 }
