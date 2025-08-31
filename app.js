@@ -1,27 +1,36 @@
-// require express
+// Import Express
 const express = require("express");
 let app=express();
 
-// require ejs
+// Import EJS and ejs-mate (for layouts/partials support)
 const ejs = require("ejs");
+const engine = require('ejs-mate');
 const path = require("path");
+
+// Set EJS as view engine and use ejs-mate for layouts
+app.engine('ejs', engine);
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 
-// require and use method-override
+// Serve static files (CSS, JS, images) from /public
+app.use(express.static(path.join(__dirname, "public")));
+
+// Import and use method-override (to support PUT/DELETE in forms)
 const methodOverride=require('method-override');
 app.use(methodOverride('_method'));
 
-// parse the url
+// Parse URL-encoded bodies (form data)
 app.use(express.urlencoded({ extended: true }));
 
-// require mongoose and connecting with mongoose
+// Connect to MongoDB using Mongoose
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
 .then(() => console.log('Connected!'))
 .catch((err)=>{
     console.log(err);
 });
+
+// Import Listing model
 const Listings=require("./models/listing.js");
 
 // index route
