@@ -3,6 +3,8 @@ body{
     display: flex !important;
     flex-direction: column !important;
     height: 100vh !important;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .container{
     flex: 1 !important;
@@ -82,4 +84,13 @@ body{
 .add-btn,.edit-btn{
     background-color: #fe424d !important;
     border: none !important;
+}
+
+/* show page */
+.show-img{
+    width: 35rem !important;
+    height: 40vh !important;
+}
+.btns{
+    display: flex;
 }
