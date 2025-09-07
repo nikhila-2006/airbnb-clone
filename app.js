@@ -37,10 +37,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
 const Listings=require("./models/listing.js");
 
 // index route
-app.get("/listings",async (req,res)=>{
+app.get("/listings",wrapAsync(async (req,res)=>{
     let allListings=await Listings.find({});
     res.render("./listings/index.ejs",{allListings});
-})
+}))
 
 // New route
 app.get("/listings/new",(req,res)=>{
@@ -55,32 +55,32 @@ app.post("/listings",wrapAsync( async(req,res)=>{
 }))
 
 // show route
-app.get("/listings/:id",async (req,res)=>{
+app.get("/listings/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let listing= await Listings.findById(id);
     res.render("./listings/show.ejs",{listing});
-})
+}))
 
 // Edit route
-app.get("/listings/:id/edit",async (req,res)=>{
+app.get("/listings/:id/edit",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let listing= await Listings.findById(id);
     res.render("listings/edit.ejs",{listing})
-})
+}))
 
 // Update Route
-app.put("/listings/:id",async (req,res)=>{
+app.put("/listings/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     await Listings.findByIdAndUpdate(id,{...req.body.listing});
     res.redirect(`/listings/${id}`);
-})
+}))
 
 // Delete Route
-app.delete("/listings/:id",async (req,res)=>{
+app.delete("/listings/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let deletedList=await Listings.findByIdAndDelete(id);
     res.redirect("/listings");
-})
+}))
 
 // root route
 app.get("/",(req,res)=>{
