@@ -10,6 +10,9 @@ const path = require("path");
 // Import utility to handle async errors
 const wrapAsync = require("./utils/wrapAsync.js");
 
+// Import custom error class for handling HTTP errors
+const ExpressError = require("./utils/ExpressError.js");
+
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
 app.set("view engine","ejs");
@@ -49,6 +52,9 @@ app.get("/listings/new",(req,res)=>{
 
 // Create route
 app.post("/listings",wrapAsync( async(req,res)=>{
+    if(!req.body.listing){
+        throw new ExpressError(400,"Send valid data for listing");
+    }
     let listing=new Listings(req.body.listing);
     await listing.save();
     res.redirect("/listings");
@@ -65,11 +71,14 @@ app.get("/listings/:id",wrapAsync(async (req,res)=>{
 app.get("/listings/:id/edit",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let listing= await Listings.findById(id);
-    res.render("listings/edit.ejs",{listing})
+    res.render("listings/edit.ejs",{listing});
 }))
 
 // Update Route
 app.put("/listings/:id",wrapAsync(async (req,res)=>{
+    if(!req.body.listing){
+        throw new ExpressError(400,"Send valid data for listing");
+    }
     let {id}=req.params;
     await Listings.findByIdAndUpdate(id,{...req.body.listing});
     res.redirect(`/listings/${id}`);
@@ -87,9 +96,15 @@ app.get("/",(req,res)=>{
     res.send("hi i am root");
 })
 
-// Error Handling middleware
+// Catch-all for undefined routes
+app.use((req,res,next)=>{
+    next(new ExpressError(404,"Page not found!"));
+})
+
+//  Error Handling Middleware
 app.use((err,req,res,next)=>{
-    res.send("Something Went Wrong");
+    const {statusCode=500,message="Something Went Wrong!"}=err;
+    res.status(statusCode).send(message);
 }) 
 
 //checking server listening or not
