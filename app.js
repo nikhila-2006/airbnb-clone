@@ -1,16 +1,7 @@
 // Import Express
 const express = require("express");
 let app=express();
-const {listingSchema}=require("./schema.js");
-const validateListing=(req,res,next)=>{
-    let {error}=listingSchema.validate(req.body);
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
+
 // Import EJS and ejs-mate (for layouts/partials support)
 const ejs = require("ejs");
 const engine = require('ejs-mate');
@@ -21,6 +12,18 @@ const wrapAsync = require("./utils/wrapAsync.js");
 
 // Import custom error class for handling HTTP errors
 const ExpressError = require("./utils/ExpressError.js");
+
+// Validates listing data and throws an error if invalid.  
+const {listingSchema}=require("./schema.js");
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    if(error){
+        let errMsg=error.details.map((el)=>el.message).join(",");
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
+}
 
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
