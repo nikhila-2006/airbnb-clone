@@ -7,6 +7,9 @@ const ejs = require("ejs");
 const engine = require('ejs-mate');
 const path = require("path");
 
+// Import utility to handle async errors
+const wrapAsync = require("./utils/wrapAsync.js");
+
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
 app.set("view engine","ejs");
@@ -45,11 +48,11 @@ app.get("/listings/new",(req,res)=>{
 })
 
 // Create route
-app.post("/listings",async (req,res)=>{
+app.post("/listings",wrapAsync( async(req,res)=>{
     let listing=new Listings(req.body.listing);
     await listing.save();
     res.redirect("/listings");
-})
+}))
 
 // show route
 app.get("/listings/:id",async (req,res)=>{
@@ -83,6 +86,11 @@ app.delete("/listings/:id",async (req,res)=>{
 app.get("/",(req,res)=>{
     res.send("hi i am root");
 })
+
+// Error Handling middleware
+app.use((err,req,res,next)=>{
+    res.send("Something Went Wrong");
+}) 
 
 //checking server listening or not
 app.listen(8080,()=>{
