@@ -1,7 +1,16 @@
 // Import Express
 const express = require("express");
 let app=express();
-
+const {listingSchema}=require("./schema.js");
+const validateListing=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    if(error){
+        let errMsg=error.details.map((el)=>el.message).join(",");
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
+}
 // Import EJS and ejs-mate (for layouts/partials support)
 const ejs = require("ejs");
 const engine = require('ejs-mate');
@@ -51,10 +60,7 @@ app.get("/listings/new",(req,res)=>{
 })
 
 // Create route
-app.post("/listings",wrapAsync( async(req,res)=>{
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send valid data for listing");
-    }
+app.post("/listings",validateListing,wrapAsync( async(req,res)=>{
     let listing=new Listings(req.body.listing);
     await listing.save();
     res.redirect("/listings");
@@ -75,10 +81,7 @@ app.get("/listings/:id/edit",wrapAsync(async (req,res)=>{
 }))
 
 // Update Route
-app.put("/listings/:id",wrapAsync(async (req,res)=>{
-    if(!req.body.listing){
-        throw new ExpressError(400,"Send valid data for listing");
-    }
+app.put("/listings/:id",validateListing,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     await Listings.findByIdAndUpdate(id,{...req.body.listing});
     res.redirect(`/listings/${id}`);
