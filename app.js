@@ -104,7 +104,7 @@ app.use((req,res,next)=>{
 //  Error Handling Middleware
 app.use((err,req,res,next)=>{
     const {statusCode=500,message="Something Went Wrong!"}=err;
-    res.status(statusCode).send(message);
+    res.status(statusCode).render("error.ejs",{message});
 }) 
 
 //checking server listening or not
