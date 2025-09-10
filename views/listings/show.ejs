@@ -29,7 +29,7 @@
             <h4>Leave a Review:</h4>
             <div class="rating mt-2 mb-2">
                 <label for="rating" class="form-label">Rating</label>
-                <input type="range" name="review[rating]" class="form-range"  min="1" max="6" step="1">
+                <input type="range" name="review[rating]" class="form-range"  min="1" max="5" step="1">
             </div>
             <div class="comment mt-2 mb-2">
                 <label for="comment" class="form-label">Comment</label>
@@ -41,5 +41,19 @@
             <button class="btn btn-outline-dark mt-2">Submit</button>
             
         </form>
+    </div>
+    <hr>
+    
+    <div class="col-8 offset-3 row ">
+        <p><b>All reviews</b></p>
+        <% for(review of listing.reviews) { %>
+            <div class="card col-5 ms-3 mb-3" style="border:1px solid black !important">
+                <div class="card-body">
+                    <h5 class="card-title">username</h5>
+                    <p class="card-text"><%= review.comment%></p>
+                    <p class="card-text mb-2"><%= review.rating%> star</p>
+                </div>
+            </div>
+        <% } %>
     </div>
 </body>
