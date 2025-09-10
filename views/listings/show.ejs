@@ -8,7 +8,7 @@
             <img src="<%=listing.image.url%>" class="card-img-top show-img mt-2" alt="...">
             <div class="card-body mt-2 col-6">
                 <p class="card-text">
-             <%= listing.description %> <br>
+                <%= listing.description %> <br>
                 <%= Number(listing.price).toLocaleString('en-IN', { style: 'currency' , currency: 'INR' }) %>/night <br>
                 <%= listing.location %> <br>
                 <%= listing.country %>
@@ -21,6 +21,23 @@
         <a href="/listings/<%= listing.id %>/edit" class="btn btn-dark edit-btn  offset-3 col-1">Edit</a>
         <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
             <button class="btn btn-dark  offset-5">Delete</button>
+        </form>
+    </div>
+    <hr>
+    <div class="col-8 offset-3 mt-3 mb-3">
+        <form action="/listings/<%= listing._id %>/reviews" >
+            <h4>Leave a Review:</h4>
+            <div class="rating mt-2 mb-2">
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range"  class="form-range"  min="1" max="6" step="1">
+            </div>
+            <div class="comment mt-2 mb-2">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea name="comment" class="form-control" id="comment" ></textarea>
+            </div>
+            <div>
+                <button type="button" class="btn btn-outline-dark mt-2">Submit</button>
+            </div>
         </form>
     </div>
 </body>
