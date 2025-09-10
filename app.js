@@ -25,6 +25,18 @@ const validateListing=(req,res,next)=>{
     }
 }
 
+// Validates reviews data and throws an error if invalid.
+const {reviewSchema}=require("./schema.js");
+const validateReview=(req,res,next)=>{
+    let {error}=reviewSchema.validate(req.body);
+    if(error){
+        let errMsg=error.details.map((el)=>el.message).join(",");
+        throw new ExpressError(400,errMsg);
+    }else{
+        next();
+    }
+}
+
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
 app.set("view engine","ejs");
@@ -50,6 +62,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
 
 // Import Listing model
 const Listings=require("./models/listing.js");
+
+// Import Reviews model
+const Reviews=require("./models/review.js");
 
 // index route
 app.get("/listings",wrapAsync(async (req,res)=>{
@@ -95,6 +110,17 @@ app.delete("/listings/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let deletedList=await Listings.findByIdAndDelete(id);
     res.redirect("/listings");
+}))
+
+// Review route
+app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
+    let listing=await Listings.findById(req.params.id);
+    let newReview= new Reviews(req.body.review);
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+    console.log("done");
+    res.redirect(`/listings/${listing._id}`);
 }))
 
 // root route
