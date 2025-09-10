@@ -2,13 +2,13 @@
 <body>
     <div class="row ">
         <div class="col-8 offset-3 mt-3">
-            <h3>Listing Details:</h3>
+            <h3><%= listing.title %></h3>
         </div>
         <div class="card offset-3" >
             <img src="<%=listing.image.url%>" class="card-img-top show-img mt-2" alt="...">
             <div class="card-body mt-2 col-6">
-                <p class="card-text"><b><%= listing.title %></b>
-                   <br> <%= listing.description %> <br>
+                <p class="card-text">
+             <%= listing.description %> <br>
                 <%= Number(listing.price).toLocaleString('en-IN', { style: 'currency' , currency: 'INR' }) %>/night <br>
                 <%= listing.location %> <br>
                 <%= listing.country %>
