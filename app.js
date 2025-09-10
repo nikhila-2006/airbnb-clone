@@ -123,6 +123,14 @@ app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
     res.redirect(`/listings/${listing._id}`);
 }))
 
+// Delete Route-for reviews
+app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
+    let {id,reviewId}=req.params;
+    await Listings.findByIdAndUpdate(id,{$pull:{reviews: reviewId}});
+    await Reviews.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+}))
+
 // root route
 app.get("/",(req,res)=>{
     res.send("hi i am root");
