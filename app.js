@@ -5,28 +5,16 @@ let app=express();
 // Import listings route file
 const listings=require("./routes/listing.js");
 
+// Import review route file
+const reviews=require("./routes/review.js");
+
 // Import EJS and ejs-mate (for layouts/partials support)
 const ejs = require("ejs");
 const engine = require('ejs-mate');
 const path = require("path");
 
-// Import utility to handle async errors
-const wrapAsync = require("./utils/wrapAsync.js");
-
 // Import custom error class for handling HTTP errors
 const ExpressError = require("./utils/ExpressError.js");
-
-// Validates reviews data and throws an error if invalid.
-const {reviewSchema}=require("./schema.js");
-const validateReview=(req,res,next)=>{
-    let {error}=reviewSchema.validate(req.body);
-    if(error){
-        let errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
 
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
@@ -51,32 +39,11 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
     console.log(err);
 });
 
-// Import Listing model
-const Listings=require("./models/listing.js");
-
-// Import Reviews model
-const Reviews=require("./models/review.js");
-
+// Use the listings router for all routes starting with "/listings"
 app.use("/listings",listings);
 
-// Review route
-app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
-    let listing=await Listings.findById(req.params.id);
-    let newReview= new Reviews(req.body.review);
-    listing.reviews.push(newReview);
-    await newReview.save();
-    await listing.save();
-    console.log("done");
-    res.redirect(`/listings/${listing._id}`);
-}))
-
-// Delete Route-for reviews
-app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
-    let {id,reviewId}=req.params;
-    await Listings.findByIdAndUpdate(id,{$pull:{reviews: reviewId}});
-    await Reviews.findByIdAndDelete(reviewId);
-    res.redirect(`/listings/${id}`);
-}))
+// Use the review router for all routes starting with "/listings/:id/reviews"
+app.use("/listings/:id/reviews",reviews)
 
 // root route
 app.get("/",(req,res)=>{
