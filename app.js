@@ -2,6 +2,24 @@
 const express = require("express");
 let app=express();
 
+// Import and configure express-session
+const session=require("express-session");
+
+// Define session options (secret, resave, saveUninitialized, and cookie settings)
+const sessionOptions=session({
+    secret:"mysupersecretsession",
+    resave: false,
+    saveUninitialized: true,
+    cookie:{
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true 
+    }
+});
+
+// Import connect-flash (for storing temporary flash messages in session)
+const flash = require('connect-flash');
+
 // Import listings route file
 const listings=require("./routes/listing.js");
 
@@ -39,16 +57,29 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
     console.log(err);
 });
 
-// Use the listings router for all routes starting with "/listings"
-app.use("/listings",listings);
+// Enable sessions in the app using the configured session options
+app.use(sessionOptions);
 
-// Use the review router for all routes starting with "/listings/:id/reviews"
-app.use("/listings/:id/reviews",reviews)
+// Enable flash messages (stored in session, shown once, then cleared)
+app.use(flash());
+
+// Middleware to make flash messages available in all views (EJS templates)
+app.use((req,res,next)=>{
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    next();
+})
 
 // root route
 app.get("/",(req,res)=>{
     res.send("hi i am root");
 })
+
+// Use the listings router for all routes starting with "/listings"
+app.use("/listings",listings);
+
+// Use the review router for all routes starting with "/listings/:id/reviews"
+app.use("/listings/:id/reviews",reviews)
 
 // Catch-all for undefined routes
 app.use((req,res,next)=>{
