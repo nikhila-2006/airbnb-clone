@@ -21,10 +21,13 @@ const sessionOptions=session({
 const flash = require('connect-flash');
 
 // Import listings route file
-const listings=require("./routes/listing.js");
+const listingRouter=require("./routes/listing.js");
 
 // Import review route file
-const reviews=require("./routes/review.js");
+const reviewRouter=require("./routes/review.js");
+
+// Import user route file
+const userRouter=require("./routes/user.js");
 
 // Import EJS and ejs-mate (for layouts/partials support)
 const ejs = require("ejs");
@@ -33,6 +36,15 @@ const path = require("path");
 
 // Import custom error class for handling HTTP errors
 const ExpressError = require("./utils/ExpressError.js");
+
+// Import Passport.js core library for authentication
+const passport=require("passport");
+
+// Import Passport's LocalStrategy for username/password authentication
+const LocalStrategy=require("passport-local");
+
+// Import User model (MongoDB with Mongoose) for authenticating users against DB
+const User=require("./models/user.js");
 
 // Set EJS as view engine and use ejs-mate for layouts
 app.engine('ejs', engine);
@@ -63,10 +75,25 @@ app.use(sessionOptions);
 // Enable flash messages (stored in session, shown once, then cleared)
 app.use(flash());
 
+// Initialize Passport middleware
+app.use(passport.initialize());
+
+// Allow persistent login sessions 
+app.use(passport.session());
+
+// Use the LocalStrategy provided by passport-local-mongoose for authentication
+passport.use(new LocalStrategy(User.authenticate()));
+
+// Serialize user data into the session (stores user ID in the session cookie)
+passport.serializeUser(User.serializeUser());
+
+// Deserialize user data from the session (retrieves full user object using ID)
+passport.deserializeUser(User.deserializeUser());
+
 // Middleware to make flash messages available in all views (EJS templates)
 app.use((req,res,next)=>{
-    res.locals.success=req.flash("success");
-    res.locals.error=req.flash("error");
+    res.locals.success=req.flash("success") || [];
+    res.locals.error=req.flash("error") || [];
     next();
 })
 
@@ -76,10 +103,13 @@ app.get("/",(req,res)=>{
 })
 
 // Use the listings router for all routes starting with "/listings"
-app.use("/listings",listings);
+app.use("/listings",listingRouter);
 
 // Use the review router for all routes starting with "/listings/:id/reviews"
-app.use("/listings/:id/reviews",reviews)
+app.use("/listings/:id/reviews",reviewRouter)
+
+// Use the user router for all routes for sign-up and login
+app.use("/",userRouter);
 
 // Catch-all for undefined routes
 app.use((req,res,next)=>{
