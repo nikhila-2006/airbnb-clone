@@ -1,8 +1,11 @@
 // Import Express
 const express = require("express");
 
-// Import the Express Router object (a mini version of the app just for routes)
+// Import the Express Router object
 const router=express.Router();
+
+// Import passport
+const passport=require("passport");
 
 // Import User model (MongoDB with Mongoose) for authenticating users against DB
 const User=require("../models/user.js");
@@ -29,6 +32,21 @@ router.post("/signup",wrapAsync(async (req,res)=>{
         res.redirect("/signup");
     }
 }))
+
+// Show login form
+router.get("/login",(req,res)=>{
+    res.render("./users/login.ejs");
+})
+
+// Handle login authentication
+router.post("/login", passport.authenticate('local', { 
+        failureRedirect: '/login',
+        failureFlash: true 
+    }),
+    async(req,res)=>{
+        req.flash("success","Welcome Back to Wanderlust");
+        res.redirect("/listings");
+})
 
 // Export router so it can be used in app.js
 module.exports = router;

@@ -5,7 +5,7 @@ let app=express();
 // Import and configure express-session
 const session=require("express-session");
 
-// Define session options (secret, resave, saveUninitialized, and cookie settings)
+// Define session options
 const sessionOptions=session({
     secret:"mysupersecretsession",
     resave: false,
