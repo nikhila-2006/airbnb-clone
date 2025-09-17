@@ -4,6 +4,9 @@ const express = require("express");
 // Import the Express Router object (a mini version of the app just for routes)
 const router=express.Router();
 
+// Import middleware to check login status
+const {isLoggedIn}=require("../middleware.js");
+
 // Import utility to handle async errors
 const wrapAsync = require("../utils/wrapAsync.js");
 
@@ -32,12 +35,13 @@ router.get("/",wrapAsync(async (req,res)=>{
 }))
 
 // New route
-router.get("/new",(req,res)=>{
+router.get("/new",isLoggedIn,(req,res)=>{
+    console.log(req.user);
     res.render("./listings/new.ejs")
 })
 
 // Create route
-router.post("/",validateListing,wrapAsync( async(req,res)=>{
+router.post("/",isLoggedIn,validateListing,wrapAsync( async(req,res)=>{
     let listing=new Listings(req.body.listing);
     await listing.save();
     req.flash("success","New listing created!");
@@ -56,7 +60,7 @@ router.get("/:id",wrapAsync(async (req,res)=>{
 }))
 
 // Edit route
-router.get("/:id/edit",wrapAsync(async (req,res)=>{
+router.get("/:id/edit",isLoggedIn,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let listing= await Listings.findById(id);
     if(!listing){
@@ -67,7 +71,7 @@ router.get("/:id/edit",wrapAsync(async (req,res)=>{
 }))
 
 // Update Route
-router.put("/:id",validateListing,wrapAsync(async (req,res)=>{
+router.put("/:id",isLoggedIn,validateListing,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     await Listings.findByIdAndUpdate(id,{...req.body.listing});
     req.flash("success","Listing updated!");
@@ -75,7 +79,7 @@ router.put("/:id",validateListing,wrapAsync(async (req,res)=>{
 }))
 
 // Delete Route
-router.delete("/:id",wrapAsync(async (req,res)=>{
+router.delete("/:id",isLoggedIn,wrapAsync(async (req,res)=>{
     let {id}=req.params;
     let deletedList=await Listings.findByIdAndDelete(id);
     req.flash("success","Listing deleted!");
