@@ -6,6 +6,7 @@ const router=express.Router();
 
 // Import middleware to check login status
 const {isLoggedIn}=require("../middleware.js");
+const {saveRedirectUrl}=require("../middleware.js");
 
 // Import utility to handle async errors
 const wrapAsync = require("../utils/wrapAsync.js");

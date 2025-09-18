@@ -12,6 +12,7 @@ const User=require("../models/user.js");
 
 // Import utility to handle async errors
 const wrapAsync = require("../utils/wrapAsync");
+const { saveRedirectUrl } = require("../middleware.js");
 
 // Route to render the signup form (GET request)
 router.get("/signup",(req,res)=>{
@@ -44,13 +45,14 @@ router.get("/login",(req,res)=>{
 })
 
 // Handle login authentication
-router.post("/login", passport.authenticate('local', { 
+router.post("/login",saveRedirectUrl, passport.authenticate('local', { 
         failureRedirect: '/login',
         failureFlash: true 
     }),
     async(req,res)=>{
+        const redirectUrl=res.locals.redirectUrl || "/listings";
         req.flash("success","Welcome Back to Wanderlust");
-        res.redirect("/listings");
+        res.redirect(redirectUrl);
 })
 
 router.get("/logout",(req,res,next)=>{
