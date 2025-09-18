@@ -44,6 +44,7 @@ router.get("/new",isLoggedIn,(req,res)=>{
 // Create route
 router.post("/",isLoggedIn,validateListing,wrapAsync( async(req,res)=>{
     let listing=new Listings(req.body.listing);
+    listing.owner=req.user._id;
     await listing.save();
     req.flash("success","New listing created!");
     res.redirect("/listings");
@@ -52,11 +53,12 @@ router.post("/",isLoggedIn,validateListing,wrapAsync( async(req,res)=>{
 // show route
 router.get("/:id",wrapAsync(async (req,res)=>{
     let {id}=req.params;
-    let listing= await Listings.findById(id).populate("reviews");
+    let listing= await Listings.findById(id).populate("reviews").populate("owner");
     if(!listing){
         req.flash("error","The listing you are trying to access no longer exists.")
         return res.redirect("/listings");
     }
+    console.log(listing);
     res.render("./listings/show.ejs",{listing});
 }))
 

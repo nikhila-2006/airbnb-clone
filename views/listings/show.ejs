@@ -7,11 +7,12 @@
         <div class="card offset-3" >
             <img src="<%=listing.image.url%>" class="card-img-top show-img mt-2" alt="...">
             <div class="card-body mt-2 col-6">
+                <p class="card-text">Owned by <i><b><%= listing.owner.username %></b></i></p>
                 <p class="card-text">
-                <%= listing.description %> <br>
-                <%= Number(listing.price).toLocaleString('en-IN', { style: 'currency' , currency: 'INR' }) %>/night <br>
-                <%= listing.location %> <br>
-                <%= listing.country %>
+                <%= listing.description %></p>
+                <p class="card-text"><%= Number(listing.price).toLocaleString('en-IN', { style: 'currency' , currency: 'INR' }) %>/night</p>
+                <p class="card-text"><%= listing.location %></p>
+                <p class="card-text"><%= listing.country %></p>
 
                 </p>
             </div>
