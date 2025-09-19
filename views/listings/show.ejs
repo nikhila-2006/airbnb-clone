@@ -18,13 +18,16 @@
             </div>
         </div>
     </div>
-    <div class="btns">
-        <a href="/listings/<%= listing.id %>/edit" class="btn btn-dark edit-btn  offset-3 col-1">Edit</a>
-        <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
-            <button class="btn btn-dark  offset-5">Delete</button>
-        </form>
-    </div>
+    <% if(currUser && listing.owner._id.equals(currUser._id)){%>
+        <div class="btns">
+            <a href="/listings/<%= listing.id %>/edit" class="btn btn-dark edit-btn  offset-3 col-1">Edit</a>
+            <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
+                <button class="btn btn-dark  offset-5">Delete</button>
+            </form>
+        </div>
+    <% } %>
     <hr>
+    <% if(currUser){ %>
     <div class="col-8 offset-3 mt-3 mb-3">
         <form action="/listings/<%= listing._id %>/reviews" method="post" novalidate class="needs-validation">
             <h4>Leave a Review:</h4>
@@ -44,19 +47,21 @@
         </form>
     </div>
     <hr>
-    
+    <% } %>
     <div class="col-8 offset-3 row ">
         <p><b>All reviews</b></p>
         <% for(review of listing.reviews) { %>
             <div class="card col-5 ms-3 mb-3" style="border:1px solid black !important">
                 <div class="card-body">
-                    <h5 class="card-title">username</h5>
+                    <h5 class="card-title mt-2">@<%= review.author.username %></h5>
                     <p class="card-text"><%= review.comment%></p>
                     <p class="card-text mb-2"><%= review.rating%> star</p>
                 </div>
+                <% if (currUser && review.author._id.equals(currUser._id)) { %>
                 <form action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE" method="post">
                     <button class="btn btn-sm btn-dark mb-2">Delete</button>
                 </form>
+                <% } %>
             </div>
         <% } %>
     </div>
