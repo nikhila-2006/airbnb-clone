@@ -22,26 +22,14 @@ const Listings=require("../models/listing.js");
 // Import Reviews model
 const Reviews=require("../models/review.js");
 
+// Import review controller
+const reviewController=require("../controllers/review.js");
+
 // Review route
-router.post("/",isLoggedIn,validateReview,wrapAsync(async(req,res)=>{
-    let listing=await Listings.findById(req.params.id);
-    let newReview= new Reviews(req.body.review);
-    newReview.author=req.user._id;
-    listing.reviews.push(newReview);
-    await newReview.save();
-    await listing.save();
-    req.flash("success","New review added!")
-    res.redirect(`/listings/${listing._id}`);
-}))
+router.post("/",isLoggedIn,validateReview,wrapAsync(reviewController.createReview))
 
 // Delete Route-for reviews
-router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(async(req,res)=>{
-    let {id,reviewId}=req.params;
-    await Listings.findByIdAndUpdate(id,{$pull:{reviews: reviewId}});
-    await Reviews.findByIdAndDelete(reviewId);
-    req.flash("success","Review deleted!")
-    res.redirect(`/listings/${id}`);
-}))
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(reviewController.destroyReview))
 
 // Export router so it can be used in app.js
 module.exports=router;
