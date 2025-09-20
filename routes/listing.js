@@ -23,26 +23,22 @@ const Listings=require("../models/listing.js");
 // Import listing controllers
 const listingsControllers=require("../controllers/listing.js");
 
-// Index route
-router.get("/",wrapAsync(listingsControllers.index))
+// Root listings route: GET fetches all listings asynchronously, POST creates a new listing with validation and authentication
+router.route("/")
+.get(wrapAsync(listingsControllers.index))
+.post(isLoggedIn,validateListing,wrapAsync(listingsControllers.createlisting))
 
 // New route
 router.get("/new",isLoggedIn,listingsControllers.renderNewForm)
 
-// Create route
-router.post("/",isLoggedIn,validateListing,wrapAsync(listingsControllers.createlisting))
-
-// show route
-router.get("/:id",wrapAsync(listingsControllers.showListing))
+// Routes for listing by ID: GET shows, PUT updates, DELETE removes with necessary auth and validations
+router.route("/:id")
+.get(wrapAsync(listingsControllers.showListing))
+.put(isLoggedIn,isOwner,validateListing,wrapAsync(listingsControllers.updateListing))
+.delete(isLoggedIn,isOwner,wrapAsync(listingsControllers.destroyListing))
 
 // Edit route
 router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingsControllers.renderEditForm))
-
-// Update Route
-router.put("/:id",isLoggedIn,isOwner,validateListing,wrapAsync(listingsControllers.updateListing))
-
-// Delete Route
-router.delete("/:id",isLoggedIn,isOwner,wrapAsync(listingsControllers.destroyListing))
 
 // Export router so it can be used in app.js
 module.exports = router;

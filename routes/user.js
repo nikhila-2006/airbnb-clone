@@ -17,22 +17,20 @@ const { saveRedirectUrl } = require("../middleware.js");
 // Import user controllers
 const userControllers=require("../controllers/user.js");
 
-// Route to render the signup form (GET request)
-router.get("/signup",userControllers.renderSignupForm)
+// Signup route with GET for form and POST to handle user registration
+router.route("/signup")
+.get(userControllers.renderSignupForm)
+.post(wrapAsync(userControllers.signup))
 
-// Signup route to register a new user
-router.post("/signup",wrapAsync(userControllers.signup))
-
-// Show login form
-router.get("/login",userControllers.renderLoginForm)
-
-// Handle login authentication
-router.post("/login",saveRedirectUrl, passport.authenticate('local', { 
+// Login route with GET for form, POST for authentication
+router.route("/login")
+.get(userControllers.renderLoginForm)
+.post(saveRedirectUrl, passport.authenticate('local', { 
         failureRedirect: '/login',
         failureFlash: true 
-    }),
-    userControllers.login)
+    }),userControllers.login)
 
+// Logout route
 router.get("/logout",userControllers.logout)
 
 // Export router so it can be used in app.js
