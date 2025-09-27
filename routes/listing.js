@@ -4,9 +4,12 @@ const express = require("express");
 // Import the Express Router object (a mini version of the app just for routes)
 const router=express.Router();
 
+// Require storage from cloudCobfig
+const {storage}=require("../cloudConfig.js");
+
 // Import multer(middleware) to upload image files
 const multer  = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({storage});
 
 // Import middleware to check login status
 const {isLoggedIn,isOwner,validateListing}=require("../middleware.js");
@@ -30,10 +33,7 @@ const listingsControllers=require("../controllers/listing.js");
 // Root listings route: GET fetches all listings asynchronously, POST creates a new listing with validation and authentication
 router.route("/")
 .get(wrapAsync(listingsControllers.index))
-// .post(isLoggedIn,validateListing,wrapAsync(listingsControllers.createlisting))
-.post(upload.single('listing[image][url]'),(req,res)=>{
-    res.send(req.file);
-})
+.post(isLoggedIn,upload.single('listing[image][url]'),validateListing,wrapAsync(listingsControllers.createlisting))
 
 // New route
 router.get("/new",isLoggedIn,listingsControllers.renderNewForm)
