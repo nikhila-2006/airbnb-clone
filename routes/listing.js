@@ -41,7 +41,7 @@ router.get("/new",isLoggedIn,listingsControllers.renderNewForm)
 // Routes for listing by ID: GET shows, PUT updates, DELETE removes with necessary auth and validations
 router.route("/:id")
 .get(wrapAsync(listingsControllers.showListing))
-.put(isLoggedIn,isOwner,validateListing,wrapAsync(listingsControllers.updateListing))
+.put(isLoggedIn,isOwner,upload.single('listing[image][url]'),validateListing,wrapAsync(listingsControllers.updateListing))
 .delete(isLoggedIn,isOwner,wrapAsync(listingsControllers.destroyListing))
 
 // Edit route
